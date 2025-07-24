@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Matrix Multiplication</title>
+    </head>
+    <body>
+    </body>
+</html>
+<form action="/mulmatrix" method="post">
+    <input type="hidden" name="size1m" value="{{ size1m }}">
+    <input type="hidden" name="size1n" value="{{ size1n }}">
+    <input type="hidden" name="size2m" value="{{ size2m }}">
+    <input type="hidden" name="size2n" value="{{ size2n }}">
+    <input type="hidden" name="mulmatrix" value="{{ mulmatrix }}">
+         <h3>Enter matrix-1</h3>
+        {%for i in range(0,size1m)%}
+            {%for j in range(0,size1n)%}
+                <input type="number"name='m1_{{i}}_{{j}}'>
+        {%endfor%}<br>
+        {%endfor%}
+
+         <h3>Enter matrix-2</h3>
+        {%for i in range(0,size2m)%}
+            {%for j in range(0,size2n)%}
+                <input type="number"name='m2_{{i}}_{{j}}'>
+        {%endfor%}<br>
+        {%endfor%}
+    <input type="submit" value="submit">
+</form>
+
+{%if {{mulmatrix}} %}
+        {% for i in {{mulmatrix}}%}
+        {%for j in i%}
+            <p>|{{j}} |</p>
+        {%endfor%}<br>
+        {%endfor%}
+    {%endif%}

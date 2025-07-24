@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Matrix-multiplication</title>
+</head>
+<body>
+    <form action="/matrix" method="post">
+    <label>size of matrix 1</label>
+    <input type="number" name = 'size1m'><input type="number" name = 'size1n'><br>
+    <label>size of matrix 2</label>
+    <input type="number" name = 'size2m'><input type="number" name = 'size2n'><br>
+    <input type="submit" name="sumbit">
+    </form>
+    {%if submit%}
+    <form action="/matrixmul" method="post">
+         <h3>Enter matrix-1</h3>
+        {%for i in range(0,size1m)%}
+            {%for j in range(0,size1n)%}
+                <input type="number"name='m1_{{i}}_{{j}}'>
+        {%endfor%}<br>
+        {%endfor%}
+
+         <h3>Enter matrix-2</h3>
+        {%for i in range(0,size2m)%}
+            {%for j in range(0,size2n)%}
+                <input type="number"name='m2_{{i}}_{{j}}'>
+        {%endfor%}<br>
+        {%endfor%}
+    <input type="submit" value="submit">
+    {%endif%}
+
+    {%if mulmatrix %}
+        {% for i in mulmatrix%}
+        {%for j in i%}
+            <p>|{{j}} |</p>
+        {%endfor%}<br>
+        {%endfor%}
+    {%endif%}
+    
+    </form>
+       
+    
+</body>
+</html>
