@@ -42,6 +42,7 @@ def graph():
             ssum+=int(equation[j][0])*(i**int(equation[j][2]))
         y.append(ssum)
     plt.figure()
+    plt.grid()
     if plotStyle == 'line':
         plt.plot(x,y)
     if plotStyle == 'scatter':
@@ -55,52 +56,31 @@ def graph():
     plt.savefig(filename)
     plt.close
     return render_template("graph.html",graph = 'static/graph.png')
-size1m,size1n,size2m,size2n=0,0,0,0
-@app.route('/matrix', methods=['POST','GET'])
-def matrix():
-    if request.method== 'GET':
-        return render_template("matrix.html")
-    if request.method =='POST':
-        global size1m,size1n,size2m,size2n
-        size1m,size1n = int(request.form.get('size1m')),int(request.form.get('size1n'))
-        size2m,size2n = int(request.form.get('size2m')),int(request.form.get('size2n'))
-        return redirect('/mulmatrix')
-@app.route('/mulmatrix',methods=['POST','GET'])
-def mulmatrix():
-    global size1m,size1n,size2m,size2n
-    print(size1m,size1n,size2m,size2n)
-    if request.method=='GET':
-        return render_template("mulmatrix.html",size1m=size1m,size1n=size1n,size2m=size2m,size2n=size2n)
-    matrix1=[[0 for _ in range(size1n)] for _ in range(size1m)]
-    matrix2=[[0 for _ in range(size2n)] for _ in range(size2m)]
-    for i in range(0,size1m):
-        for j in range(0,size1n):
-            matrix1[i][j] = int(request.form.get(f'm1_{i}_{j}'))
-    for i in range(0,size2m):
-        for j in range(0,size2n):
-            matrix2[i][j] = int(request.form.get(f'm2_{i}_{j}'))
-    if size1n == size2m:
-        mulMatrix =[[0 for _ in range(size2n)] for _ in range(size1m)]
-        return render_template("mulmatrix.html",mulMatrix=mulMatrix,size1m=size1m,size1n=size1n,size2m=size2m,size2n=size2n)
-    else:
-        return render_template("error.html")
-@app.route('/eqnsolve',methods=['POST','GET'])
-def eqnsolve():
-    if request.method =='GET':
-        return render_template('eqnsolve.html')
-    else:
-        eeqn1 = str(request.form.get('eqn1')).split('+')
-        eqn1=[]
-        for i in range(len(eeqn1)):
-            eqn1.append(re.split(r'[*^]+',eeqn1[i]))
-        """
-        -b , root(b^2-4ac) /2a
-        """
-        d =eqn1[1][0]**2 - 4*eqn1[2][0]*eqn1[0][0]
-        if d<0:
-            return render_template('error.html')
-        else:
-            root1 = (d-eqn1[1][0])/2*eqn1[2][0]
-            root2 = (-d-eqn1[1][0])/2*eqn1[2][0]
-            return render_template('eqnsolve.html',root1 = root1,root2=root2)
-app.run(debug=True)
+@app.route('/matrixop',methods=['POST','GET'])
+def matrixop():
+   if request.method == 'GET':
+       return render_template('matrixop.html')
+   if not all(request.form.get(f'a{i}{j}') for i in range(1, 4) for j in range(1, 4)):
+       return render_template('error.html', error_message="Missing element")
+   a11,a12,a13,a21,a22,a23,a31,a32,a33 = int(request.form.get('a11')),int(request.form.get('a12')),int(request.form.get('a13')),int(request.form.get('a21')),int(request.form.get('a22')),int(request.form.get('a23')),int(request.form.get('a31')),int(request.form.get('a32')),int(request.form.get('a33'))
+   matrix1 = [[a11,a12,a13],[a21,a22,a23],[a31,a32,a33]]
+   
+   b11,b12,b13,b21,b22,b23,b31,b32,b33 = int(request.form.get('b11')),int(request.form.get('b12')),int(request.form.get('b13')),int(request.form.get('b21')),int(request.form.get('b22')),int(request.form.get('b23')),int(request.form.get('b31')),int(request.form.get('b32')),int(request.form.get('b33'))
+   matrix2 = [[b11,b12,b13],[b21,b22,b23],[b31,b32,b33]]
+   
+   operation = request.form.get('operation')
+   result = [[0,0,0],[0,0,0],[0,0,0]]
+   if operation == 'sum':
+       for i in range(0,3):
+           for j in range(0,3):
+               result[i][j] = matrix1[i][j] + matrix2[i][j]
+   elif operation == 'sub':
+       for i in range(0,3):
+           for j in range(0,3):
+               result[i][j] = matrix1[i][j] - matrix2[i][j]
+   elif operation == 'multiplication':
+       for i in range(0,3):
+           for j in range(0,3):
+               for k in range(3): result[i][j]+=matrix1[i][k]*matrix2[k][j]
+   return render_template('matrixop.html',submit = 1,c11 = result[0][0],c12=result[0][1],c13 =result[0][2],c21 = result[1][0],c22=result[1][1],c23 =result[1][2],c31 = result[2][0],c32=result[2][1],c33 =result[2][2])
+app.run(debug = True)
